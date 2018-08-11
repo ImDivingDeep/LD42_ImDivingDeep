@@ -7,6 +7,8 @@ public class SheepController : MonoBehaviour {
     public float speed;
     private Rigidbody2D rbd;
 
+    private static int _health;
+
 	// Use this for initialization
 	void Start () {
 
@@ -34,5 +36,15 @@ public class SheepController : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 		
+        if(_health < 0)
+        {
+
+        }
+
 	}
+
+    public static void Damage(int damage)
+    {
+        _health -= damage;
+    }
 }
