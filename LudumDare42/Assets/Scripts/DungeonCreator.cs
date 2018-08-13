@@ -25,6 +25,7 @@ public class DungeonCreator : MonoBehaviour {
     public GameObject[] outerWallTiles;                       // An array of outer wall tile prefabs.
     public GameObject[] enemyPrefabs;
     public GameObject[] props;
+    public GameObject boss;
     public GameObject player;
 
     private TileType[][] tiles;                               // A jagged array of tile types representing the board, like a grid.
@@ -97,6 +98,10 @@ public class DungeonCreator : MonoBehaviour {
         Vector3 playerPos = new Vector3(rooms[0].xPos * tileScale.x, rooms[0].yPos * tileScale.y, 0);
         GameController.instance.SetupCamera(Instantiate(player, playerPos, Quaternion.identity));
 
+        int bossRoom = Random.Range(1, rooms.Length);
+
+        
+
         for (int i = 1; i < rooms.Length; i++)
         {
             // Create a room.
@@ -117,6 +122,13 @@ public class DungeonCreator : MonoBehaviour {
 
             int amountOfEnemies = numEnemies.Random;
             amountOfProps = numProps.Random;
+
+            if(i == bossRoom)
+            {
+                amountOfEnemies = 0;
+                amountOfProps += 3;
+                Instantiate(boss, new Vector3((rooms[i].xPos * tileScale.x) + 4, (rooms[i].yPos * tileScale.y) + rooms[i].roomHeight - 3), Quaternion.identity);
+            }
 
             for (int j = 0; j < amountOfEnemies; j++)
             {

@@ -10,52 +10,67 @@ public class SheepController : MonoBehaviour {
     public int maxHealth = 100;
     public int currentHealth = 100;
 
+    GameObject GameOverPanel;
+
 	// Use this for initialization
 	void Start () {
 
         rbd = GetComponent<Rigidbody2D>();
-
+        GameOverPanel = GameObject.Find("GameOver");
 	}
 
     //FixedUpdate is called at a fixed interval and is independent of frame rate. Put physics code here.
     void FixedUpdate()
     {
-        //Store the current horizontal input in the float moveHorizontal.
-        float moveHorizontal = Input.GetAxis("Horizontal");
+        if (!GameController.paused)
+        {
+            //Store the current horizontal input in the float moveHorizontal.
+            float moveHorizontal = Input.GetAxis("Horizontal");
 
-        //Store the current vertical input in the float moveVertical.
-        float moveVertical = Input.GetAxis("Vertical");
+            //Store the current vertical input in the float moveVertical.
+            float moveVertical = Input.GetAxis("Vertical");
 
-        if (moveHorizontal > 0)
-            transform.rotation = Quaternion.Euler(transform.rotation.x, 0.0f, transform.rotation.y);
-        else if (moveHorizontal < 0)
-            transform.rotation = Quaternion.Euler(transform.rotation.x, 180.0f, transform.rotation.y);
+            if (moveHorizontal > 0)
+                transform.rotation = Quaternion.Euler(transform.rotation.x, 0.0f, transform.rotation.y);
+            else if (moveHorizontal < 0)
+                transform.rotation = Quaternion.Euler(transform.rotation.x, 180.0f, transform.rotation.y);
 
-        if (moveHorizontal != 0 || moveVertical != 0)
-            GetComponent<Animator>().SetBool("IsWalking", true);
-        else
-            GetComponent<Animator>().SetBool("IsWalking", false);
+            if (moveHorizontal != 0 || moveVertical != 0)
+                GetComponent<Animator>().SetBool("IsWalking", true);
+            else
+                GetComponent<Animator>().SetBool("IsWalking", false);
 
-        //Use the two store floats to create a new Vector2 variable movement.
-        //Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+            //Use the two store floats to create a new Vector2 variable movement.
+            //Vector2 movement = new Vector2(moveHorizontal, moveVertical);
 
-        //Call the AddForce function of our Rigidbody2D rb2d supplying movement multiplied by speed to move our player.
-        //rbd.AddForce(movement * speed);
-        rbd.velocity = new Vector3(moveHorizontal * speed, moveVertical * speed);
+            //Call the AddForce function of our Rigidbody2D rb2d supplying movement multiplied by speed to move our player.
+            //rbd.AddForce(movement * speed);
+            rbd.velocity = new Vector3(moveHorizontal * speed, moveVertical * speed);
+        }
     }
 
     // Update is called once per frame
     void Update () {
 
-        if (Input.GetMouseButtonDown(0))
-            Attack();
-
-        if(currentHealth < 0)
+        if (!GameController.paused)
         {
+            if (Input.GetMouseButtonDown(0))
+                Attack();
 
+            if (currentHealth < 0)
+            {
+                GameOver();
+            }
         }
 
 	}
+
+    public void GameOver()
+    {
+        GameController.paused = true;
+        GameOverPanel.GetComponent<CanvasGroup>().alpha = 1;
+        GameOverPanel.GetComponent<CanvasGroup>().interactable = true;
+    }
 
     void Attack()
     {

@@ -1,9 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
+
+    public GameObject textbox;
+    public static bool paused;
 
     private static GameController s_Instance = null;
     private GameObject healthBar;
@@ -26,7 +30,6 @@ public class GameController : MonoBehaviour {
             {
                 GameObject obj = new GameObject("GameController");
                 s_Instance = obj.AddComponent(typeof(GameController)) as GameController;
-                Debug.Log("Could not locate an AManager object. AManager was Generated Automaticly.");
             }
 
             return s_Instance;
@@ -43,6 +46,11 @@ public class GameController : MonoBehaviour {
 
         healthBar = GameObject.FindGameObjectWithTag("HealthBar");
 
+        //Time.timeScale = 0.0f;
+        //paused = true;
+        //textbox.SetActive(true);
+        Textbox.instance.StartDialog(Resources.Load<Dialog>("Dialog1"));
+
 	}
 	
 	// Update is called once per frame
@@ -55,6 +63,11 @@ public class GameController : MonoBehaviour {
         if (pos.y < 0.3f) MoveCamera(new Vector2(0, -1));
         else if (0.7f < pos.y) MoveCamera(new Vector2(0, 1));
 
+    }
+
+    public void ReloadLevel()
+    {
+        SceneManager.LoadScene(1);
     }
 
     void OnApplicationQuit()
@@ -70,7 +83,6 @@ public class GameController : MonoBehaviour {
     public void SetupCamera(GameObject player)
     {
         _player = player;
-        Debug.Log(_player.name);
         Camera.main.transform.position = new Vector3(_player.transform.position.x, _player.transform.position.y, Camera.main.transform.position.z);
     }
 

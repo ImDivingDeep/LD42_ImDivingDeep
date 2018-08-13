@@ -79,6 +79,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brokenTexture: {fileID: 21300000, guid: 010c348b8e176fe4ba105af108e44784, type: 3}
+  lootTable:
+  - {fileID: 1996017041107802, guid: 30d158868fe748e4181b7b4bee764cac, type: 2}
+  lootChance: 40
 --- !u!212 &212302337194379434
 SpriteRenderer:
   m_ObjectHideFlags: 1

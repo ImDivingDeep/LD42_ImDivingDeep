@@ -23,41 +23,43 @@ public class Enemy : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Start () {
+	public virtual void Start () {
 
         state = EnemyState.Idle;
-		
-	}
+    }
 	
 	// Update is called once per frame
-	void Update () {
-		
-        if(state == EnemyState.ChasingPlayer)
+	public virtual void Update () {
+
+        if (!GameController.paused)
         {
-            if (!IsPlayerStillInRange())
+            if (state == EnemyState.ChasingPlayer)
             {
-                state = EnemyState.Idle;
-                return;
+                if (!IsPlayerStillInRange())
+                {
+                    state = EnemyState.Idle;
+                    return;
+                }
+                cooldownCurrent += Time.deltaTime;
+                LookAtPlayer();
+                MoveTowardsPlayer();
+                DecideToAttack();
             }
-            cooldownCurrent += Time.deltaTime;
-            LookAtPlayer();
-            MoveTowardsPlayer();
-            DecideToAttack();
-        }
-        else if(state == EnemyState.Idle)
-        {
-            if (DetectPlayer())
+            else if (state == EnemyState.Idle)
             {
-                state = EnemyState.ChasingPlayer;
+                if (DetectPlayer())
+                {
+                    state = EnemyState.ChasingPlayer;
+                }
             }
-        }
-        else if(state == EnemyState.Attacking)
-        {
-            StartCoroutine(Attack());
-        }
-        else if (state == EnemyState.NotMoving)
-        {
-            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            else if (state == EnemyState.Attacking)
+            {
+                StartCoroutine(Attack());
+            }
+            else if (state == EnemyState.NotMoving)
+            {
+                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
         }
 
 
@@ -85,19 +87,22 @@ public class Enemy : MonoBehaviour {
         state = EnemyState.ChasingPlayer;
     }
 
-    public void DoDamage(int damage)
+    public virtual void DoDamage(int damage)
     {
         health -= damage;
 
+        print("received damage");
+
         Vector3 direction = GameController.instance._player.transform.position - transform.position;
 
-        GetComponent<Rigidbody2D>().AddForce(-direction.normalized * 10, ForceMode2D.Impulse);
+        if(GetComponent<Rigidbody2D>())
+            GetComponent<Rigidbody2D>().AddForce(-direction.normalized * 15, ForceMode2D.Impulse);
 
         if (health <= 0)
             Die();
     }
 
-    public void Die()
+    public virtual void Die()
     {
         Destroy(gameObject);
     }
@@ -139,6 +144,7 @@ public class Enemy : MonoBehaviour {
 
         */
     }
+    
 
 
     bool IsPlayerStillInRange()
