@@ -7,7 +7,8 @@ public class SheepController : MonoBehaviour {
     public float speed;
     private Rigidbody2D rbd;
 
-    private static int _health;
+    public int maxHealth = 100;
+    public int currentHealth = 100;
 
 	// Use this for initialization
 	void Start () {
@@ -25,8 +26,18 @@ public class SheepController : MonoBehaviour {
         //Store the current vertical input in the float moveVertical.
         float moveVertical = Input.GetAxis("Vertical");
 
+        if (moveHorizontal > 0)
+            transform.rotation = Quaternion.Euler(transform.rotation.x, 0.0f, transform.rotation.y);
+        else if (moveHorizontal < 0)
+            transform.rotation = Quaternion.Euler(transform.rotation.x, 180.0f, transform.rotation.y);
+
+        if (moveHorizontal != 0 || moveVertical != 0)
+            GetComponent<Animator>().SetBool("IsWalking", true);
+        else
+            GetComponent<Animator>().SetBool("IsWalking", false);
+
         //Use the two store floats to create a new Vector2 variable movement.
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+        //Vector2 movement = new Vector2(moveHorizontal, moveVertical);
 
         //Call the AddForce function of our Rigidbody2D rb2d supplying movement multiplied by speed to move our player.
         //rbd.AddForce(movement * speed);
@@ -35,16 +46,30 @@ public class SheepController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		
-        if(_health < 0)
+
+        if (Input.GetMouseButtonDown(0))
+            Attack();
+
+        if(currentHealth < 0)
         {
 
         }
 
 	}
 
-    public static void Damage(int damage)
+    void Attack()
     {
-        _health -= damage;
+        if (transform.Find("Weapon").GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsTag("Idle") && !transform.Find("Weapon").GetComponent<Animator>().IsInTransition(0))
+        {
+            transform.Find("Weapon").GetComponent<Animator>().SetTrigger("Attack");
+            GetComponent<AudioSource>().pitch = Random.Range(0.9f, 1.5f);
+            GetComponent<AudioSource>().Play();
+        }
+    }
+
+    public void Damage(int damage)
+    {
+        currentHealth -= damage;
+        GameController.instance.UpdateHealthbar();
     }
 }

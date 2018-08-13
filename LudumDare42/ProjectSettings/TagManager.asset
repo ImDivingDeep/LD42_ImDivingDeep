@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - HealthBar
   layers:
   - Default
   - TransparentFX
@@ -14,8 +15,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
+  - PlayerMovement
+  - EnemyMovement
   - 
   - 
   - 
@@ -40,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3846575473
+    locked: 0
+  - name: Player
+    uniqueID: 144397955
     locked: 0

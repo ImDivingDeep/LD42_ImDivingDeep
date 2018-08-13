@@ -14,6 +14,8 @@ public class DungeonCreator : MonoBehaviour {
     public int columns = 100;                                 // The number of columns on the board (how wide it will be).
     public int rows = 100;                                    // The number of rows on the board (how tall it will be).
     public IntRange numRooms = new IntRange(15, 20);         // The range of the number of rooms there can be.
+    public IntRange numEnemies = new IntRange(0, 5);      // The range of the number of enemies there can be in a room.
+    public IntRange numProps = new IntRange(1, 10);         //The range of how many props there can be in a room
     public IntRange roomWidth = new IntRange(3, 10);         // The range of widths rooms can have.
     public IntRange roomHeight = new IntRange(3, 10);        // The range of heights rooms can have.
     public IntRange corridorLength = new IntRange(6, 10);    // The range of lengths corridors between rooms can have.
@@ -21,6 +23,8 @@ public class DungeonCreator : MonoBehaviour {
     public GameObject[] wallupTiles;                            // An array of wall tile prefabs.
     public GameObject[] walldownTiles;                            // An array of wall tile prefabs.
     public GameObject[] outerWallTiles;                       // An array of outer wall tile prefabs.
+    public GameObject[] enemyPrefabs;
+    public GameObject[] props;
     public GameObject player;
 
     private TileType[][] tiles;                               // A jagged array of tile types representing the board, like a grid.
@@ -81,6 +85,18 @@ public class DungeonCreator : MonoBehaviour {
         // Setup the first corridor using the first room.
         corridors[0].SetupCorridor(rooms[0], corridorLength, roomWidth, roomHeight, columns, rows, true);
 
+        int amountOfProps = numProps.Random;
+
+        for (int j = 0; j < amountOfProps; j++)
+        {
+            int x = Random.Range(rooms[0].xPos, rooms[0].xPos + rooms[0].roomWidth - 1);
+            int y = Random.Range(rooms[0].yPos, rooms[0].yPos + rooms[0].roomHeight - 1);
+            InstantiateFromArray(props, x, y);
+        }
+
+        Vector3 playerPos = new Vector3(rooms[0].xPos * tileScale.x, rooms[0].yPos * tileScale.y, 0);
+        GameController.instance.SetupCamera(Instantiate(player, playerPos, Quaternion.identity));
+
         for (int i = 1; i < rooms.Length; i++)
         {
             // Create a room.
@@ -99,10 +115,21 @@ public class DungeonCreator : MonoBehaviour {
                 corridors[i].SetupCorridor(rooms[i], corridorLength, roomWidth, roomHeight, columns, rows, false);
             }
 
-            if (i == 1)
+            int amountOfEnemies = numEnemies.Random;
+            amountOfProps = numProps.Random;
+
+            for (int j = 0; j < amountOfEnemies; j++)
             {
-                Vector3 playerPos = new Vector3(rooms[i].xPos * tileScale.x, rooms[i].yPos * tileScale.y, 0);
-                Instantiate(player, playerPos, Quaternion.identity);
+                int x = Random.Range(rooms[i].xPos, rooms[i].xPos + rooms[i].roomWidth - 1);
+                int y = Random.Range(rooms[i].yPos, rooms[i].yPos + rooms[i].roomHeight - 1);
+                InstantiateFromArray(enemyPrefabs, x, y);
+            }
+
+            for (int j = 0; j < amountOfProps; j++)
+            {
+                int x = Random.Range(rooms[i].xPos, rooms[i].xPos + rooms[i].roomWidth - 1);
+                int y = Random.Range(rooms[i].yPos, rooms[i].yPos + rooms[i].roomHeight - 1);
+                InstantiateFromArray(props, x, y);
             }
         }
 
